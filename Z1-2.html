@@ -1,0 +1,29 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <title>VP-LV</title> 
+        <script src="https://d3js.org/d3.v3.min.js"></script> 
+    </head> 
+    <body> 
+        <script> 
+            d3.select("body").append("h1").text("Naslov");
+
+            var div1=d3.select("body").append("div").attr("id","ID1");
+            div1.append("h2").text("Podnaslov 1");
+            div1.append("p").text("Tekst 1");
+
+            var div2=d3.select("body").append("div").attr("id","ID2");
+            div2.append("h2").text("Podnaslov 2");
+            div2.append("p").text("Tekst 2");
+            
+            d3.selectAll("p").text("Novi proizvoljni tekst");
+
+        </script> 
+    </body> 
+</html>
+
+<!--
+Rješenje prethodnog zadatka prošireno je dodavanjem id atributa svakom div elementu u obliku ID1 i ID2. 
+Nadalje, korištenjem metode selectAll("p") dohvaćeni su svi p elementi u dokumentu te im je promijenjen sadržaj na novi statički tekst.
+-->

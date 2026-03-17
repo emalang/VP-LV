@@ -1,0 +1,34 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <title>VP-LV</title> 
+        <script src="https://d3js.org/d3.v3.min.js"></script> 
+    </head> 
+    <body> 
+        <script> 
+            var data=[1,2,3,4,5,6,7,8,9,10];
+
+            var divs=d3.select("body")
+            .selectAll("div")
+            .data(data)
+            .enter()
+            .append("div");
+
+            divs.append("h2")
+            .text(function(d) {
+            return "Podnaslov " + d; });
+            
+            divs.append("p")
+            .text(function(d) {
+            return "Tekst " + d + "."; });
+            
+        </script> 
+    </body> 
+</html>
+
+<!--
+Korištenjem D3 metoda selectAll(), data() i enter() generirano je 10 div elemenata na temelju zadanog skupa podataka. 
+Za svaki element dodani su pripadajući h2 i p elementi, čiji sadržaj ovisi o vrijednosti podataka, 
+čime su automatski generirani redni brojevi podnaslova i teksta.
+-->

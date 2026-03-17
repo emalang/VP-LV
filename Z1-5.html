@@ -1,0 +1,62 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <title>VP-LV</title> 
+        <script src="https://d3js.org/d3.v3.min.js"></script> 
+    </head> 
+    <body> 
+        <script> 
+            var svg=d3.select("body")
+            .append("svg")
+            .attr("width",500)
+            .attr("height",250);
+
+            svg.append("circle")
+            .attr("cx",100)
+            .attr("cy",100)
+            .attr("r",40)
+            .style("fill","none")
+            .style("stroke","blue")
+            .style("stroke-width","5px");
+
+            svg.append("circle")
+            .attr("cx",200)
+            .attr("cy",100)
+            .attr("r",40)
+            .style("fill","none")
+            .style("stroke","black")
+            .style("stroke-width","5px");
+
+            svg.append("circle")
+            .attr("cx",300)
+            .attr("cy",100)
+            .attr("r",40)
+            .style("fill","none")
+            .style("stroke","red")
+            .style("stroke-width","5px");
+
+            svg.append("circle")
+            .attr("cx",150)
+            .attr("cy",140)
+            .attr("r",40)
+            .style("fill","none")
+            .style("stroke","yellow")
+            .style("stroke-width","5px");
+
+            svg.append("circle")
+            .attr("cx",250)
+            .attr("cy",140)
+            .attr("r",40)
+            .style("fill","none")
+            .style("stroke","green")
+            .style("stroke-width","5px");
+        </script> 
+    </body> 
+</html>
+
+<!--
+Pomoću biblioteke D3.js kreiran je SVG element unutar kojeg je nacrtano pet kružnica koje zajedno čine logo olimpijskih igara. 
+Kružnice su raspoređene u dva reda i obojene standardnim olimpijskim bojama: plavom, crnom, crvenom, žutom i zelenom. 
+Za crtanje su korišteni SVG elementi circle s transparentnom ispunom i obojenim obrubom.
+-->

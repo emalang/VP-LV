@@ -1,0 +1,34 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <meta charset="utf-8"> 
+        <title>VP-LV</title> 
+        <script src="https://d3js.org/d3.v3.min.js"></script> 
+    </head> 
+    <body> 
+        <script> 
+          var svg=d3.select("body")
+          .append("svg")
+          .attr("width",200)
+          .attr("height",700);
+
+          svg.append("rect")
+          .attr("x",20)
+          .attr("y",20)
+          .attr("width",100)
+          .attr("height",600)
+          .style("fill","yellow")
+          .style("stroke","black")
+          .style("stroke-width","5px")
+          .style("fill-opacity",0.5)
+          .style("stroke-opacity",1);
+
+        </script> 
+    </body> 
+</html>
+
+<!--
+Pomoću biblioteke D3.js kreiran je SVG element unutar tijela HTML dokumenta. 
+U SVG je dodan pravokutnik dimenzija 100x600 px. Pravokutnik je obojen žutom bojom, s crnim obrubom debljine 5 px. Prozirnost ispune postavljena je na 50%, 
+dok je obrub potpuno neproziran.
+-->
