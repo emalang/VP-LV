@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Z2-2</title>
+  <style>
+    .axis {
+      font: 9px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+  </style>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <script>
+    var podaci = [
+      {"zupanija":"Grad Zagreb","broj":199},
+      {"zupanija":"Splitsko-dalmatinska županija","broj":74},
+      {"zupanija":"Istarska županija","broj":58},
+      {"zupanija":"Zadarska županija","broj":56},
+      {"zupanija":"Zagrebačka županija","broj":53},
+      {"zupanija":"Varaždinska županija","broj":47},
+      {"zupanija":"Vukovarsko-srijemska županija","broj":47},
+      {"zupanija":"Primorsko-goranska županija","broj":47},
+      {"zupanija":"Međimurska županija","broj":45},
+      {"zupanija":"Osječko-baranjska županija","broj":36},
+      {"zupanija":"Krapinsko-zagorska županija","broj":35},
+      {"zupanija":"Bjelovarsko-bilogorska županija","broj":28},
+      {"zupanija":"Koprivničko-križevačka županija","broj":25},
+      {"zupanija":"Dubrovačko-neretvanska županija","broj":22},
+      {"zupanija":"Karlovačka županija","broj":21},
+      {"zupanija":"Sisačko-moslavačka županija","broj":20},
+      {"zupanija":"Virovitičko-podravska županija","broj":18},
+      {"zupanija":"Šibensko-kninska županija","broj":15},
+      {"zupanija":"Brodsko-posavska županija","broj":14},
+      {"zupanija":"Požeško-slavonska županija","broj":14},
+      {"zupanija":"Ličko-senjska županija","broj":11}
+    ];
+
+
+    var margin = { top: 20, bottom: 260, left: 60, right: 20 };
+    var width = 1400 - margin.left - margin.right;
+    var height = 600 - margin.top - margin.bottom;
+    var barPadding = 6;
+    var barWidth = width / podaci.length - barPadding;
+
+    var x = d3.scaleBand()
+      .domain(d3.range(podaci.length))
+      .range([0, width])
+      .padding(0.1);
+
+   //console.log(d3.max(djelatnici, function(d) { return d.prezime; }));
+
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(podaci, function(d) { return d.broj; })])
+      .range([height, 0]);
+
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top)
+      .style("background-color", "lightblue")
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var xAxis = d3.axisBottom(x)
+      .tickFormat(function (d, i) { return podaci[i].zupanija; });
+
+    var yAxis = d3.axisLeft(y)
+      .ticks(10);
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .style("font-size", "10px")
+      .attr("dx", "-0.8em")
+      .attr("dy", "0.15em")
+      .attr("transform", "rotate(-60)");
+
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -45)
+      .attr("x", -height / 2)
+      .attr("fill", "black")
+      .style("text-anchor", "middle")
+      .text("Vrijednost");
+
+    var barchart = svg.selectAll("rect")
+      .data(podaci)
+      .enter()
+      .append("rect")
+      .attr("x", function (d, i) { return x(i); })
+      .attr("y", function (d) { return y(d.broj); })
+      .attr("height", function (d) { return height - y(d.broj); })
+      .attr("width", barWidth)
+      .attr("fill", "blue");
+  </script>
+</body>
+
+<!--Korištenjem biblioteke D3 izrađen je stupčasti graf koji prikazuje broj ustanova po županijama. 
+Definirane su linearna skala za y-os i ordinalna skala za x-os, a podaci su mapirani na pravokutnike (rect) 
+čija visina odgovara vrijednosti. Dodane su osi pomoću d3.axisBottom i d3.axisLeft.-->

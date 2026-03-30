@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Z2-6</title>
+
+  <style>
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .line {
+      fill: none;
+      stroke: blue;
+      stroke-width: 2;
+    }
+  </style>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+<script>
+var podaci = [
+  {"datum":"2024-01-01","vrijednost":12},
+  {"datum":"2024-01-05","vrijednost":18},
+  {"datum":"2024-01-10","vrijednost":9},
+  {"datum":"2024-01-15","vrijednost":21},
+  {"datum":"2024-01-20","vrijednost":15},
+  {"datum":"2024-01-25","vrijednost":24},
+  {"datum":"2024-02-01","vrijednost":19},
+  {"datum":"2024-02-05","vrijednost":28},
+  {"datum":"2024-02-10","vrijednost":23},
+  {"datum":"2024-02-15","vrijednost":30}
+];
+
+// pretvorba stringa u datum
+var parseDate = d3.timeParse("%Y-%m-%d");
+
+podaci.forEach(function(d) {
+  d.datum = parseDate(d.datum);
+  d.vrijednost = +d.vrijednost;
+});
+
+var margin = { top: 20, bottom: 70, left: 60, right: 20 };
+var width = 1000 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+// vremenska skala za x-os
+var x = d3.scaleTime()
+  .domain(d3.extent(podaci, function(d) { return d.datum; }))
+  .range([0, width]);
+
+// linearna skala za y-os
+var y = d3.scaleLinear()
+  .domain([0, d3.max(podaci, function(d) { return d.vrijednost; })])
+  .range([height, 0]);
+
+var svg = d3.select("body")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .style("background-color", "lightblue")
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// osi
+var xAxis = d3.axisBottom(x);
+var yAxis = d3.axisLeft(y).ticks(10);
+
+svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(xAxis);
+
+svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis);
+
+// nazivi osi
+svg.append("text")
+  .attr("x", width / 2)
+  .attr("y", height + 50)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .text("Datum");
+
+svg.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("x", -height / 2)
+  .attr("y", -40)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .text("Vrijednost");
+
+// linija
+var valueline = d3.line()
+  .x(function(d) { return x(d.datum); })
+  .y(function(d) { return y(d.vrijednost); });
+
+svg.append("path")
+  .datum(podaci)
+  .attr("class", "line")
+  .attr("d", valueline);
+
+// točke
+svg.selectAll("circle")
+  .data(podaci)
+  .enter()
+  .append("circle")
+  .attr("cx", function(d) { return x(d.datum); })
+  .attr("cy", function(d) { return y(d.vrijednost); })
+  .attr("r", 4)
+  .attr("fill", "red");
+
+</script>
+</body>
+</html>
+
+<!--Generiran je skup podataka koji sadrži datume i pripadne vrijednosti. Za prikaz je korišten linijski graf pri čemu x-os predstavlja vrijeme, 
+implementirano pomoću d3.scaleTime, dok y-os prikazuje vrijednosti.
+ Datumi su parsirani pomoću d3.timeParse, što omogućuje ispravno prikazivanje vremenske osi i kronološki raspored podataka.-->

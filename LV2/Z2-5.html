@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Z2-5</title>
+
+  <style>
+    .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .line1 {
+      fill: none;
+      stroke: blue;
+      stroke-width: 2;
+    }
+
+    .line2 {
+      fill: none;
+      stroke: red;
+      stroke-width: 2;
+    }
+
+    .line3 {
+      fill: none;
+      stroke: green;
+      stroke-width: 2;
+    }
+  </style>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+
+<script>
+
+var podaci = [
+  {"zupanija":"Grad Zagreb","ukupno":199,"email":198,"telefon":196},
+  {"zupanija":"Splitsko-dalmatinska županija","ukupno":74,"email":73,"telefon":74},
+  {"zupanija":"Istarska županija","ukupno":58,"email":58,"telefon":58},
+  {"zupanija":"Zadarska županija","ukupno":56,"email":56,"telefon":55},
+  {"zupanija":"Zagrebačka županija","ukupno":53,"email":53,"telefon":53},
+  {"zupanija":"Varaždinska županija","ukupno":47,"email":47,"telefon":47},
+  {"zupanija":"Vukovarsko-srijemska županija","ukupno":47,"email":47,"telefon":47},
+  {"zupanija":"Primorsko-goranska županija","ukupno":47,"email":47,"telefon":47},
+  {"zupanija":"Međimurska županija","ukupno":45,"email":45,"telefon":45},
+  {"zupanija":"Osječko-baranjska županija","ukupno":36,"email":36,"telefon":36}
+];
+
+var margin = { top: 20, bottom: 180, left: 60, right: 120 };
+var width = 1100 - margin.left - margin.right;
+var height = 600 - margin.top - margin.bottom;
+
+// X skala
+var x = d3.scaleBand()
+  .domain(d3.range(podaci.length))
+  .range([0, width]);
+
+// Y skala
+var y = d3.scaleLinear()
+  .domain([0, d3.max(podaci, function(d) {
+    return Math.max(d.ukupno, d.email, d.telefon);
+  })])
+  .range([height, 0]);
+
+// SVG
+var svg = d3.select("body")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.bottom + margin.top)
+  .style("background-color", "lightblue")
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Osi
+var xAxis = d3.axisBottom(x)
+  .tickFormat(function(d, i) { return podaci[i].zupanija; });
+
+var yAxis = d3.axisLeft(y).ticks(10);
+
+// X os
+svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(xAxis)
+  .selectAll("text")
+  .style("text-anchor", "end")
+  .style("font-size", "10px")
+  .attr("dx", "-0.8em")
+  .attr("dy", "0.15em")
+  .attr("transform", "rotate(-45)");
+
+// Y o
+svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis);
+
+// Nazivi osi
+svg.append("text")
+  .attr("x", width / 2)
+  .attr("y", height + 120)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .text("Županija");
+
+svg.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("x", -height / 2)
+  .attr("y", -45)
+  .style("text-anchor", "middle")
+  .style("font-size", "14px")
+  .text("Broj ustanova");
+
+// Linije
+var line1 = d3.line()
+  .x(function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .y(function(d) { return y(d.ukupno); });
+
+var line2 = d3.line()
+  .x(function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .y(function(d) { return y(d.email); });
+
+var line3 = d3.line()
+  .x(function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .y(function(d) { return y(d.telefon); });
+
+// Crtanje linija
+svg.append("path")
+  .datum(podaci)
+  .attr("class", "line1")
+  .attr("d", line1);
+
+svg.append("path")
+  .datum(podaci)
+  .attr("class", "line2")
+  .attr("d", line2);
+
+svg.append("path")
+  .datum(podaci)
+  .attr("class", "line3")
+  .attr("d", line3);
+
+// Točke
+svg.selectAll(".circle1")
+  .data(podaci)
+  .enter()
+  .append("circle")
+  .attr("cx", function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .attr("cy", function(d) { return y(d.ukupno); })
+  .attr("r", 4)
+  .attr("fill", "blue");
+
+svg.selectAll(".circle2")
+  .data(podaci)
+  .enter()
+  .append("circle")
+  .attr("cx", function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .attr("cy", function(d) { return y(d.email); })
+  .attr("r", 4)
+  .attr("fill", "red");
+
+svg.selectAll(".circle3")
+  .data(podaci)
+  .enter()
+  .append("circle")
+  .attr("cx", function(d, i) { return x(i) + x.bandwidth() / 2; })
+  .attr("cy", function(d) { return y(d.telefon); })
+  .attr("r", 4)
+  .attr("fill", "green");
+
+// Legenda
+svg.append("text")
+  .attr("x", width + 20)
+  .attr("y", 30)
+  .style("fill", "blue")
+  .text("Ukupno");
+
+svg.append("text")
+  .attr("x", width + 20)
+  .attr("y", 55)
+  .style("fill", "red")
+  .text("Email");
+
+svg.append("text")
+  .attr("x", width + 20)
+  .attr("y", 80)
+  .style("fill", "green")
+  .text("Telefon");
+
+</script>
+
+</body>
+</html>
+
+<!--
+Izrađen je linijski graf koji prikazuje tri skupa podataka na istoj vizualizaciji: ukupan broj ustanova, broj ustanova s e-mailom te broj ustanova s telefonom. 
+Svaki skup prikazan je posebnom linijom i bojom. 
+Time je omogućena usporedba među skupovima podataka po županijama. 
+Podaci su prethodno pripremljeni grupiranjem i agregacijom.-->
