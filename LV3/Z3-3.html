@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Z3-3</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+<script>
+    var widthSVG = 600;
+    var heightSVG = 400;
+    var widthRect = 120;
+    var heightRect = 80;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", widthSVG)
+        .attr("height", heightSVG)
+        .style("border", "1px solid #ccc");
+
+    var rect = svg.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", widthRect)
+        .attr("height", heightRect)
+        .attr("fill", "tomato")
+        .attr("transform", "translate(" + (widthSVG - widthRect) + "," + (heightSVG - heightRect) + ")");
+
+    rect.transition()
+        .duration(1000)
+        .attr("transform", "translate(0," + (heightSVG - heightRect) + ")")
+        .each("end", function () {
+            d3.select(this)
+                .transition()
+                .duration(1000)
+                .attr("transform", "translate(0,0)");
+        });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Z3-5</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+</head>
+<body style="margin:0; background:#000;">
+
+<script>
+    var widthSVG = 900;
+    var heightSVG = 700;
+    var centerX = widthSVG / 2;
+    var centerY = heightSVG / 2;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", widthSVG)
+        .attr("height", heightSVG);
+
+    // Sunce
+    svg.append("circle")
+        .attr("cx", centerX)
+        .attr("cy", centerY)
+        .attr("r", 35)
+        .attr("fill", "gold");
+
+    var planets = [
+        { orbit: 70,  r: 8,  color: "gray",   duration: 4000 },
+        { orbit: 110, r: 10, color: "orange", duration: 7000 },
+        { orbit: 160, r: 11, color: "deepskyblue", duration: 10000 },
+        { orbit: 220, r: 9,  color: "red",    duration: 14000 }
+    ];
+
+    planets.forEach(function(p) {
+        // orbita
+        svg.append("circle")
+            .attr("cx", centerX)
+            .attr("cy", centerY)
+            .attr("r", p.orbit)
+            .attr("fill", "none")
+            .attr("stroke", "#444");
+
+        // grupa za rotaciju
+        var grupa = svg.append("g")
+            .attr("transform", "translate(" + centerX + "," + centerY + ")");
+
+        grupa.append("circle")
+            .attr("cx", p.orbit)
+            .attr("cy", 0)
+            .attr("r", p.r)
+            .attr("fill", p.color);
+
+        rotiraj(grupa, p.duration);
+    });
+
+    function rotiraj(element, duration) {
+        (function repeat() {
+            element
+                .transition()
+                .duration(duration)
+                .ease("linear")
+                .attrTween("transform", function() {
+                    return d3.interpolateString(
+                        "translate(" + centerX + "," + centerY + ") rotate(0)",
+                        "translate(" + centerX + "," + centerY + ") rotate(360)"
+                    );
+                })
+                .each("end", repeat);
+        })();
+    }
+</script>
+
+</body>
+</html>

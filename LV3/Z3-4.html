@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Z3-4</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+<script>
+    var widthSVG = 900;
+    var heightSVG = 500;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", widthSVG)
+        .attr("height", heightSVG)
+        .style("border", "1px solid #ccc");
+
+    var podlogaY = 380;
+    var podlogaWidth = 180;
+    var podlogaHeight = 40;
+    var radius = 25;
+
+    var materijali = [
+        { x: 120, naziv: "Kruta tvar", boja: "#777" },
+        { x: 360, naziv: "Elastična tvar", boja: "#4CAF50" },
+        { x: 600, naziv: "Tekućina", boja: "#2196F3" }
+    ];
+
+    materijali.forEach(function(m) {
+        svg.append("rect")
+            .attr("x", m.x)
+            .attr("y", podlogaY)
+            .attr("width", podlogaWidth)
+            .attr("height", podlogaHeight)
+            .attr("fill", m.boja);
+
+        svg.append("text")
+            .attr("x", m.x + podlogaWidth / 2)
+            .attr("y", podlogaY + podlogaHeight + 25)
+            .attr("text-anchor", "middle")
+            .text(m.naziv);
+
+        svg.append("circle")
+            .attr("cx", m.x + podlogaWidth / 2)
+            .attr("cy", 60)
+            .attr("r", radius)
+            .attr("fill", "orange")
+            .attr("stroke", "black")
+            .attr("stroke-width", 2);
+    });
+
+    var kugle = svg.selectAll("circle");
+
+    // 1. kugla - kruta tvar
+    d3.select(kugle[0][0])
+        .transition()
+        .duration(2000)
+        .ease("bounce")
+        .attr("cy", podlogaY - radius);
+
+    // 2. kugla - elastična tvar
+    d3.select(kugle[0][1])
+        .transition()
+        .duration(1500)
+        .attr("cy", podlogaY - radius)
+        .each("end", function() {
+            d3.select(this)
+                .transition()
+                .duration(700)
+                .attr("cy", 220)
+                .transition()
+                .duration(700)
+                .attr("cy", podlogaY - radius)
+                .transition()
+                .duration(500)
+                .attr("cy", 280)
+                .transition()
+                .duration(500)
+                .attr("cy", podlogaY - radius);
+        });
+
+    // 3. kugla - tekućina
+    d3.select(kugle[0][2])
+        .transition()
+        .duration(2200)
+        .ease("linear")
+        .attr("cy", podlogaY - 5)
+        .each("end", function() {
+            d3.select(this)
+                .transition()
+                .duration(1200)
+                .attr("cy", podlogaY + 20)
+                .attr("opacity", 0.7);
+        });
+</script>
+
+</body>
+</html>

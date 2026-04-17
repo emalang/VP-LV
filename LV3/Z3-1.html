@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <title>Z3-1</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+</head>
+<body>
+
+<script>
+    var widthSVG = 600;
+    var heightSVG = 400;
+
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", widthSVG)
+        .attr("height", heightSVG)
+        .style("border", "1px solid #ccc");
+
+    var startSize = 100;
+
+    var square = svg.append("rect")
+        .attr("x", (widthSVG - startSize) / 2)
+        .attr("y", (heightSVG - startSize) / 2)
+        .attr("width", startSize)
+        .attr("height", startSize)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 3)
+        .attr("opacity", 1);
+
+    square
+        .transition()
+        .delay(3000)          // čekaj 3 sekunde
+        .duration(5000)       // ispuna traje 5 sekundi
+        .attr("fill", "orange")
+        .each("end", function () {
+            var newSize = widthSVG / 2;
+
+            d3.select(this)
+                .transition()
+                .duration(3000)
+                .attr("x", (widthSVG - newSize) / 2)
+                .attr("y", (heightSVG - newSize) / 2)
+                .attr("width", newSize)
+                .attr("height", newSize)
+                .attr("opacity", 0);
+        });
+</script>
+
+</body>
+</html>
