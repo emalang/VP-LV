@@ -3,49 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Z3-1</title>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #1e1e2f; /* tamna pozadina */
+        }
+        svg { 
+            background-color: white; 
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+    </style>
 </head>
 <body>
 
 <script>
-    var widthSVG = 600;
-    var heightSVG = 400;
+const widthSVG = 500;
+const heightSVG = 500;
 
-    var svg = d3.select("body")
-        .append("svg")
-        .attr("width", widthSVG)
-        .attr("height", heightSVG)
-        .style("border", "1px solid #ccc");
+const svg = d3.select("body")
+    .append("svg")
+    .attr("width", widthSVG)
+    .attr("height", heightSVG);
 
-    var startSize = 100;
+// KVADRAT
+const kvadrat = svg.append("rect")
+    .attr("x", 200)
+    .attr("y", 200)
+    .attr("width", 100)
+    .attr("height", 100)
+    .attr("fill", "rgba(128, 0, 128, 0.2)") // lagano ljubičasto
+    .attr("stroke", "#ff4da6") // pink obrub
+    .attr("stroke-width", 3)
+    .attr("opacity", 1);
 
-    var square = svg.append("rect")
-        .attr("x", (widthSVG - startSize) / 2)
-        .attr("y", (heightSVG - startSize) / 2)
-        .attr("width", startSize)
-        .attr("height", startSize)
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-width", 3)
-        .attr("opacity", 1);
+// PRVA TRANZICIJA
+kvadrat.transition()
+    .delay(3000)
+    .duration(5000)
+    .ease(d3.easeCubic)
+    .attr("fill", "rgba(128, 0, 128, 1)") // puna ljubičasta
+    .on("end", function() {
 
-    square
-        .transition()
-        .delay(3000)          // čekaj 3 sekunde
-        .duration(5000)       // ispuna traje 5 sekundi
-        .attr("fill", "orange")
-        .each("end", function () {
-            var newSize = widthSVG / 2;
-
-            d3.select(this)
-                .transition()
-                .duration(3000)
-                .attr("x", (widthSVG - newSize) / 2)
-                .attr("y", (heightSVG - newSize) / 2)
-                .attr("width", newSize)
-                .attr("height", newSize)
-                .attr("opacity", 0);
-        });
+// DRUGA TRANZICIJA
+d3.select(this).transition()
+    .duration(5000)
+    .ease(d3.easeLinear)
+    .attr("width", 50)
+    .attr("height", 50)
+    .attr("x", 225) // da ostane centriran
+    .attr("y", 225)
+    .attr("opacity", 0);
+});
 </script>
 
 </body>

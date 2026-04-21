@@ -2,81 +2,102 @@
 <html lang="hr">
 <head>
     <meta charset="UTF-8">
-    <title>Z3-2</title>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <title>ZADATAK 2 - nove boje</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #111; /* tamna pozadina */
+        }
+        svg { 
+            background-color: #1e1e2f; 
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
 
 <script>
-    var widthSVG = 800;
-    var heightSVG = 500;
-    var brojKvadrata = 10;
+const widthSVG = 800;
+const heightSVG = 600;
 
-    var svg = d3.select("body")
-        .append("svg")
-        .attr("width", widthSVG)
-        .attr("height", heightSVG)
-        .style("border", "1px solid #ccc");
+const svg = d3.select("body")
+  .append("svg")
+  .attr("width", widthSVG)
+  .attr("height", heightSVG);
 
-    function randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+// 🎨 definiramo paletu boja
+const boje = [
+    "#ff6b6b", // crveno
+    "#feca57", // žuto
+    "#48dbfb", // svijetlo plavo
+    "#1dd1a1", // mint
+    "#5f27cd", // ljubičasto
+    "#ff9ff3", // pink
+    "#54a0ff", // plavo
+    "#00d2d3"  // tirkizno
+];
 
-    function pokreniAnimaciju() {
-        svg.selectAll("*").remove();
+// funkcija za slučajnu boju
+function randomBoja() {
+    return boje[Math.floor(Math.random() * boje.length)];
+}
 
-        var data = d3.range(brojKvadrata).map(function () {
-            var size = randomInt(30, 80);
-            return {
-                x: randomInt(0, widthSVG - size),
-                y: randomInt(0, heightSVG - size),
-                size: size,
-                fillDuration: randomInt(1000, 4000),
-                growDuration: randomInt(1000, 4000),
-                delayStart: randomInt(0, 2000)
-            };
-        });
+// animacija kvadrata
+function animirajKvadrat(kvadrat) {
 
-        var maxUkupnoVrijeme = 0;
+    const startX = Math.random() * (widthSVG - 100);
+    const startY = Math.random() * (heightSVG - 100);
+    const startSize = 40 + Math.random() * 60;
 
-        data.forEach(function (d) {
-            var ukupno = d.delayStart + d.fillDuration + d.growDuration;
-            if (ukupno > maxUkupnoVrijeme) {
-                maxUkupnoVrijeme = ukupno;
-            }
+    const trajanjePunjenja = 2000 + Math.random() * 4000;
+    const trajanjeNestajanja = 2000 + Math.random() * 4000;
 
-            var rect = svg.append("rect")
-                .attr("x", d.x)
-                .attr("y", d.y)
-                .attr("width", d.size)
-                .attr("height", d.size)
-                .attr("fill", "none")
-                .attr("stroke", "purple")
-                .attr("stroke-width", 2)
-                .attr("opacity", 1);
+    const boja = randomBoja();
 
-            rect.transition()
-                .delay(d.delayStart)
-                .duration(d.fillDuration)
-                .attr("fill", "gold")
-                .each("end", function () {
-                    var novaVelicina = randomInt(100, Math.floor(widthSVG / 4));
+    // reset
+    kvadrat
+        .attr("x", startX)
+        .attr("y", startY)
+        .attr("width", startSize)
+        .attr("height", startSize)
+        .attr("fill", "rgba(255,255,255,0.05)") // lagani glow efekt
+        .attr("stroke", boja)
+        .attr("stroke-width", 2)
+        .attr("opacity", 1);
 
-                    d3.select(this)
-                        .transition()
-                        .duration(d.growDuration)
-                        .attr("x", Math.max(0, d.x - (novaVelicina - d.size) / 2))
-                        .attr("y", Math.max(0, d.y - (novaVelicina - d.size) / 2))
-                        .attr("width", novaVelicina)
-                        .attr("height", novaVelicina)
-                        .attr("opacity", 0);
+    // 1. tranzicija - punjenje
+    kvadrat.transition()
+        .delay(3000)
+        .duration(trajanjePunjenja)
+        .ease(d3.easeCubic)
+        .attr("fill", boja)
+        .on("end", function() {
+
+            // 2. tranzicija - smanjenje + nestajanje
+            d3.select(this).transition()
+                .duration(trajanjeNestajanja)
+                .ease(d3.easeLinear)
+                .attr("width", startSize / 2)
+                .attr("height", startSize / 2)
+                .attr("x", startX + startSize / 4) // centriranje
+                .attr("y", startY + startSize / 4)
+                .attr("opacity", 0)
+                .on("end", function() {
+                    animirajKvadrat(d3.select(this));
                 });
         });
+}
 
-        setTimeout(pokreniAnimaciju, maxUkupnoVrijeme + 500);
-    }
-
-    pokreniAnimaciju();
+// 10 kvadrata
+for (let i = 0; i < 10; i++) {
+    const noviKvadrat = svg.append("rect");
+    animirajKvadrat(noviKvadrat);
+}
 </script>
 
 </body>
