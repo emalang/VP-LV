@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<title>Z4-4</title>
+
+<!-- Učitavanje D3 biblioteke verzije 3 -->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<style>
+  body { font-family: Arial, sans-serif; }
+
+  /* Izgled kružnica koje predstavljaju čvorove */
+  .node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    cursor: pointer;
+  }
+
+  /* Izgled teksta uz čvorove */
+  .node text {
+    font: 11px sans-serif;
+  }
+
+  /* Izgled veza između čvorova */
+  .link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>Z4-4: Stablo sa skrivanjem djece čvora</h2>
+<p>Klikni na čvor koji ima djecu za skrivanje ili ponovno prikazivanje.</p>
+
+<script>
+
+
+/*
+ Podaci su organizirani kao stablo.
+ Svaki čvor ima name.
+ Ako čvor ima djecu, ona su zapisana u children.
+*/
+var data = {
+    "name": "flare",
+    "children": [
+        {
+            "name": "analytics",
+            "children": [
+                {
+                    "name": "cluster",
+                    "children": [
+                        {"name": "AgglomerativeCluster", "size": 3938},
+                        {"name": "CommunityStructure", "size": 3812},
+                        {"name": "MergeEdge", "size": 743}
+                    ]
+                },
+                {
+                    "name": "graph",
+                    "children": [
+                        {"name": "BetweennessCentrality", "size": 3534},
+                        {"name": "LinkDistance", "size": 5731}
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+
+
+var width = 700;
+var height = 500;
+
+
+
+/*
+ cluster layout računa pozicije čvorova u stablu.
+ On ne crta stablo, nego računa x i y koordinate.
+*/
+var cluster = d3.layout.cluster()
+    .size([height, width - 220]);
+
+
+
+/*
+ diagonal generator crta zakrivljene veze između čvorova.
+ projection određuje koje koordinate se koriste za crtanje.
+*/
+var diagonal = d3.svg.diagonal()
+    .projection(function(d) { 
+        return [d.y, d.x]; 
+    });
+
+
+/*
+ SVG je prostor u kojem se crta stablo.
+ <g> element se pomiče udesno da tekst ne bude zalijepljen uz rub.
+*/
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(60,0)");
+
+
+
+/*
+ update() se poziva:
+ - prvi put za početno crtanje
+ - svaki put nakon klika na čvor
+*/
+function update() {
+
+    /* brišemo prethodno nacrtano stablo */
+    svg.selectAll("*").remove();
+
+    /*
+     cluster.nodes(data) računa sve čvorove
+     cluster.links(nodes) računa veze između čvorova
+    */
+    var nodes = cluster.nodes(data);
+    var links = cluster.links(nodes);
+
+
+
+    /*
+     Veze se crtaju prve kako bi bile ispod čvorova.
+    */
+    svg.selectAll(".link")
+        .data(links)
+        .enter().append("path")
+        .attr("class", "link")
+        .attr("d", diagonal);
+
+
+    /*
+     Svaki čvor je <g> grupa.
+     U grupi se kasnije dodaju kružnica i tekst.
+    */
+    var node = svg.selectAll(".node")
+        .data(nodes)
+        .enter().append("g")
+        .attr("class", "node")
+
+        /*
+         Čvor se postavlja na izračunatu poziciju.
+         d.y je horizontalna, d.x vertikalna koordinata.
+        */
+        .attr("transform", function(d) { 
+            return "translate(" + d.y + "," + d.x + ")"; 
+        })
+
+        /* klik na čvor poziva funkciju click */
+        .on("click", click);
+
+
+
+    node.append("circle")
+        .attr("r", 4.5)
+
+        /*
+         Ako čvor ima skrivenu djecu (_children),
+         oboji se plavo kako bi se znalo da se može otvoriti.
+        */
+        .style("fill", function(d) { 
+            return d._children ? "lightsteelblue" : "#fff"; 
+        });
+
+
+    node.append("text")
+
+        /*
+         Ako čvor ima djecu, tekst ide lijevo.
+         Ako nema djecu, tekst ide desno.
+        */
+        .attr("dx", function(d) { 
+            return d.children || d._children ? -8 : 8; 
+        })
+        .attr("dy", 3)
+
+        /*
+         Poravnanje teksta:
+         - end za unutarnje čvorove
+         - start za listove
+        */
+        .style("text-anchor", function(d) { 
+            return d.children || d._children ? "end" : "start"; 
+        })
+
+        /* ispis naziva čvora */
+        .text(function(d) { 
+            return d.name; 
+        });
+}
+
+
+
+
+/*
+ Klik na čvor:
+ - ako čvor ima children, spremi ih u _children i sakrij
+ - ako čvor ima _children, vrati ih u children i prikaži
+*/
+function click(d) {
+
+    if (d.children) {
+        d._children = d.children;
+        d.children = null;
+    } 
+    else if (d._children) {
+        d.children = d._children;
+        d._children = null;
+    }
+
+    /* ponovno crtanje stabla nakon promjene */
+    update();
+}
+
+
+/* prvo početno crtanje stabla */
+update();
+
+</script>
+
+</body>
+</html>

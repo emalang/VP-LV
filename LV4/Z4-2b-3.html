@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<title>Z4-2b-3</title>
+
+<!-- Učitavanje D3 biblioteke -->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<style>
+  body { font-family: Arial, sans-serif; }
+
+  /* tekst malo jači da bude vidljiv */
+  text { 
+    font-size: 13px; 
+    fill: #111; 
+    font-weight: bold; 
+  }
+
+  /* cursor pointer za interaktivnost */
+  path { cursor: pointer; }
+</style>
+</head>
+
+<body>
+
+<h2>Z4-2b i Z4-3: Rotirani tekst + događaji na segmentima</h2>
+<p>Klikni segment i otvori Console u pregledniku.</p>
+
+<script>
+
+
+
+var width = 600;
+var height = 600;
+
+var outerRadius = 200;   // veličina kruga
+var innerRadius = 0;     // 0 = puni krug
+
+
+
+
+var color = d3.scale.category20(); // automatske boje
+
+
+
+/*
+ arc generator:
+ - koristi se za crtanje segmenata
+*/
+var arc = d3.svg.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
+
+
+
+/*
+ labelArc služi SAMO za poziciju teksta
+ - malo je bliže centru (0.68)
+ - pomaže da tekst ne ide skroz na rub
+*/
+var labelArc = d3.svg.arc()
+    .innerRadius(outerRadius * 0.68)
+    .outerRadius(outerRadius * 0.68);
+
+
+
+
+var data = [
+    {name: 'jabuka', value: 60},
+    {name: 'kruska', value: 3},
+    {name: 'banana', value: 7},
+    {name: 'jagoda', value: 25},
+    {name: 'ribizla', value: 2}
+];
+
+
+
+
+/*
+ pie NE crta graf!
+ On samo računa kutove segmenata
+*/
+var pie = d3.layout.pie()
+    .value(function(d) { return d.value; });
+
+
+
+
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+
+
+/*
+ svaka grupa = jedan segment
+*/
+var pieArcs = svg.selectAll("g.pie")
+    .data(pie(data))
+    .enter()
+    .append("g")
+    .attr("class", "pie")
+
+    /* centriranje kruga */
+    .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+
+
+
+pieArcs.append("path")
+    .attr("fill", function(d, i) { return color(i); }) // boja
+    .attr("d", arc) // oblik segmenta
+
+    
+    .on("click", function(d) {
+        console.log("Voće: " + d.data.name + ", količina: " + d.data.value);
+    })
+
+   
+    .on("mouseover", function(d) {
+        console.log("Prelazak mišem - voće: " + d.data.name + ", količina: " + d.data.value);
+    });
+
+
+
+
+/*
+ tekst:
+ - koristi centroid labelArc-a
+ - rotira se prema kutu segmenta
+*/
+pieArcs.append("text")
+    .attr("transform", function(d) {
+
+        /* pozicija teksta */
+        var c = labelArc.centroid(d);
+
+        /* srednji kut segmenta */
+        var angle = (d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90;
+
+        /* translate + rotate */
+        return "translate(" + c + ") rotate(" + angle + ")";
+    })
+    .attr("text-anchor", "middle")
+    .text(function(d) { 
+        return d.data.name + " - " + d.data.value; 
+    });
+
+</script>
+
+</body>
+</html>

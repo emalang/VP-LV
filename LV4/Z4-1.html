@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<title>Z4-1</title>
+
+<!-- Učitavanje D3 biblioteke (verzija 3 jer je koristi priručnik) -->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<style>
+  /* Stil stranice */
+  body { font-family: Arial, sans-serif; }
+
+  /* Stil teksta unutar SVG-a */
+  text { font-size: 13px; fill: #111; }
+</style>
+</head>
+
+<body>
+
+<h2>Z4-1: Kružni prikaz - naziv voća i količina</h2>
+
+<script>
+
+
+
+/* širina SVG prostora */
+var width = 500;
+
+/* visina SVG prostora */
+var height = 500;
+
+/* vanjski radijus kružnog prikaza */
+var outerRadius = 200;
+
+/* unutarnji radijus (0 = puni krug, >0 = donut) */
+var innerRadius = 0;
+
+/* automatski dodjeljuje različite boje segmentima */
+var color = d3.scale.category20();
+
+
+
+/*
+ arc generator:
+ - prima kutove (iz pie layouta)
+ - pretvara ih u SVG putanju (<path>)
+*/
+var arc = d3.svg.arc()
+    .innerRadius(innerRadius)   // unutarnji radijus
+    .outerRadius(outerRadius);  // vanjski radijus
+
+
+
+/* niz objekata - svaki predstavlja jedno voće */
+var data = [
+    {name: 'jabuka', value: 17},
+    {name: 'kruska', value: 4},
+    {name: 'banana', value: 83},
+    {name: 'jagoda', value: 47},
+    {name: 'ribizla', value: 1}
+];
+
+
+
+/*
+ pie layout NE crta graf!
+ On samo računa:
+ - početni kut
+ - završni kut
+ za svaki segment
+*/
+var pie = d3.layout.pie()
+    .value(function(d) { 
+        return d.value;  // koristi value za veličinu segmenta
+    });
+
+
+
+/* dodavanje SVG-a u HTML */
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+
+
+/*
+ za svaki podatak:
+ - kreira se <g> grupa
+ - unutar nje će biti path + text
+*/
+var pieArcs = svg.selectAll("g.pie")
+    .data(pie(data))   // povezivanje podataka (nakon pie izračuna)
+    .enter()
+    .append("g")
+    .attr("class", "pie")
+
+    /* pomicanje u centar SVG-a */
+    .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+
+
+/*
+ svaki segment:
+ - <path> element
+ - arc određuje oblik
+*/
+pieArcs.append("path")
+    .attr("fill", function(d, i) { 
+        return color(i);  // svaka kriška druga boja
+    })
+    .attr("d", arc);      // generiranje oblika
+
+
+
+/*
+ tekst se pozicionira pomoću centroida
+ centroid = sredina segmenta
+*/
+pieArcs.append("text")
+    .attr("transform", function(d) { 
+        return "translate(" + arc.centroid(d) + ")"; 
+    })
+    .attr("text-anchor", "middle")  // centriranje teksta
+    .text(function(d) { 
+        return d.data.name + " - " + d.data.value; 
+    });
+
+</script>
+
+</body>
+</html>
